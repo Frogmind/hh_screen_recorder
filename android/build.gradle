@@ -1,0 +1,57 @@
+group 'com.inan.evin.hh_screen_recorder'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.1'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'http://raw.github.com/Frogmind/HHScreenRecorderLibCommon/master/repository/'
+            allowInsecureProtocol = true
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 31
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+    }
+
+    if (project.android.hasProperty("namespace")) {
+        namespace 'com.inan.evin.hh_screen_recorder'
+    } 
+}
+
+
+ext {
+    supportLibVersion = '28.0.0'  // variable that can be referenced to keep support libs consistent
+    commonLibVersion= '1.1.9'
+}
+
+
+dependencies {
+    implementation fileTree(dir: new File(buildDir, 'libs'), include: '*.jar')
+    implementation "com.android.support:support-v4:${supportLibVersion}"
+    implementation("com.serenegiant:common:${commonLibVersion}") {
+        exclude module: 'support-v4'
+    }
+}
