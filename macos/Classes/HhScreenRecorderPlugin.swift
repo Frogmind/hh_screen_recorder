@@ -50,7 +50,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                   if let previewViewController = previewViewController {
                       
                       previewViewController.previewControllerDelegate = self
-                      let viewController = NSApplication.shared.keyWindow!.contentViewController
+                      let viewController = NSApplication.shared.keyWindow?.contentViewController
                       
                       viewController?.presentAsModalWindow(previewViewController)
                       
@@ -98,7 +98,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
     public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         
        // UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-        let viewController = NSApplication.shared.keyWindow!.contentViewController
+        let viewController = NSApplication.shared.keyWindow?.contentViewController
         
         viewController?.dismiss(previewController)
         flutterRes?(true)
