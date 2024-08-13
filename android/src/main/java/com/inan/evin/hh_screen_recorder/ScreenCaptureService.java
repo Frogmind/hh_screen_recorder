@@ -58,6 +58,12 @@ public class ScreenCaptureService extends Service {
         super.onStartCommand(intent, flags, startId);
         System.out.println("HHRecorder: start command received successfully.");
 
+        if (null == intent || null == intent.getAction ()) {
+            String source = null == intent ? "intent" : "action";
+            System.out.println(source + " was null, flags=" + flags + " bits=" + Integer.toBinaryString(flags));
+            return Service.START_STICKY;
+        }
+
         // CREATE NOTIFICATION && START FOREGROUND SERVICE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "001";
@@ -144,7 +150,7 @@ public class ScreenCaptureService extends Service {
 
         activeService = this;
         startRecording();
-        return Service.START_STICKY;
+        return Service.START_REDELIVER_INTENT;
     }
 
     private static final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
