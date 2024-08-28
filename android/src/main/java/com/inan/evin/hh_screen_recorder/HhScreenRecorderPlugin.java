@@ -413,8 +413,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
             m_contentValues.put(MediaStore.Video.Media.DATA, m_finalFullPath);
         }
 
-        m_contentValues.put(MediaStore.Video.Media.DATA, m_finalFullPath);
-
         ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
         m_uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
 
