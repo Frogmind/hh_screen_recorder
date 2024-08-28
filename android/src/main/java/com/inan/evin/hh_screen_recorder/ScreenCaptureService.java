@@ -58,7 +58,7 @@ public class ScreenCaptureService extends Service {
         super.onStartCommand(intent, flags, startId);
         System.out.println("HHRecorder: start command received successfully.");
 
-        if (null == intent || null == intent.getAction ()) {
+        if (null == intent) {
             String source = null == intent ? "intent" : "action";
             System.out.println(source + " was null, flags=" + flags + " bits=" + Integer.toBinaryString(flags));
             return Service.START_STICKY;
