@@ -53,6 +53,12 @@ public class MediaScreenEncoder extends MediaVideoEncoderBase {
     private Surface mSurface;
     private final Handler mHandler;
 
+    private MediaProjection.Callback mProjectionCallback = new MediaProjection.Callback() {
+        public void onStop() {
+
+        }
+    };
+
     public MediaScreenEncoder(final MediaMuxerWrapper muxer, final MediaEncoderListener listener,
                               final MediaProjection projection, final int width, final int height, final int density,
                               final int _bitrate, final int _fps) {
@@ -65,6 +71,7 @@ public class MediaScreenEncoder extends MediaVideoEncoderBase {
         final HandlerThread thread = new HandlerThread(TAG);
         thread.start();
         mHandler = new Handler(thread.getLooper());
+        mMediaProjection.registerCallback(mProjectionCallback, mHandler);
     }
 
     @Override
@@ -172,6 +179,7 @@ public class MediaScreenEncoder extends MediaVideoEncoderBase {
             }
             if (DEBUG) Log.v(TAG,  "tear down MediaProjection");
             if (mMediaProjection != null) {
+                mMediaProjection.unregisterCallback(mProjectionCallback);
                 mMediaProjection.stop();
                 mMediaProjection = null;
             }
