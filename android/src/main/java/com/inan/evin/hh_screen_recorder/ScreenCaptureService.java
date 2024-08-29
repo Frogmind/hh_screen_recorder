@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.hardware.display.DisplayManager;
@@ -94,7 +95,11 @@ public class ScreenCaptureService extends Service {
                         pendingIntent).build();
 
                 notification = new Notification.Builder(getApplicationContext(), channelId).setOngoing(true).setSmallIcon(R.drawable.icon).setContentTitle(notificationTitle).setContentText(notificationMessage).addAction(action).build();
-                startForeground(101, notification);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(101, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+                } else {
+                    startForeground(101, notification);
+                }
             }
         } else {
             startForeground(101, new Notification());
