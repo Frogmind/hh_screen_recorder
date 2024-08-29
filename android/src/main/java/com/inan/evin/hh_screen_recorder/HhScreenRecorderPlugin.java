@@ -22,6 +22,7 @@ import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.media.projection.MediaProjectionConfig;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -258,7 +259,15 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
                 return;
             }
 
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                boolean canRecordScreen = m_context.checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION) == PackageManager.PERMISSION_GRANTED;
+                if (!canRecordScreen) {
+                    m_activity.requestPermissions(new String[]{Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION}, SCREEN_RECORD_REQUEST_CODE);
+                    return;
+                }
+            }*/
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             {
                 boolean canWriteExternal = m_context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 
@@ -272,9 +281,14 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
         System.out.println("HHRecorder: All good with permissions, carrying on with capture intent!");
 
-        Intent permissionIntent = m_projectionManager != null
-                ? m_projectionManager.createScreenCaptureIntent()
-                : null;
+        Intent permissionIntent = null;
+        if (m_projectionManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                permissionIntent = m_projectionManager.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay());
+            } else {
+                permissionIntent = m_projectionManager.createScreenCaptureIntent();
+            }
+        }
 
         if (permissionIntent != null)
             m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
