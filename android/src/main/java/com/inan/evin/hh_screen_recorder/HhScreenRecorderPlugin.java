@@ -419,12 +419,13 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
         m_contentValues.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
         m_contentValues.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
 
+        String path = Environment.DIRECTORY_MOVIES + File.separator + m_foldername;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            System.out.println("HHRecorder: SDK is >= Q (29), using URI instead of path. URI RelativePath:" + Environment.DIRECTORY_MOVIES + File.separator + m_foldername);
-           m_contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + m_foldername);
+            System.out.println("HHRecorder: SDK is >= Q (29), using URI instead of path. URI RelativePath:" + path);
+           m_contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, path);
         } else {
-           System.out.println("HHRecorder: SDK is < Q (29), setting full path" + m_finalFullPath);
-            m_contentValues.put(MediaStore.Video.Media.DATA, m_finalFullPath);
+           System.out.println("HHRecorder: SDK is < Q (29), setting full path" + path);
+            m_contentValues.put(MediaStore.Video.Media.DATA, path);
         }
 
         ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
