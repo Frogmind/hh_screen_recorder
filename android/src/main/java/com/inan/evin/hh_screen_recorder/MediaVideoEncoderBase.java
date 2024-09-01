@@ -62,6 +62,7 @@ public abstract class MediaVideoEncoderBase extends MediaEncoder {
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitrate > 0 ? bitrate : calcBitRate(frame_rate));
         format.setInteger(MediaFormat.KEY_FRAME_RATE, frame_rate);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 10);
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 0); // https://stackoverflow.com/questions/21284874/illegal-state-exception-when-calling-mediacodec-configure
         return format;
     }
 
