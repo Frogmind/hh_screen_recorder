@@ -400,7 +400,12 @@ public abstract class MediaEncoder implements Runnable {
                     // write encoded data to muxer(need to adjust presentationTimeUs.
                     if (!mRequestPause) {
                         mBufferInfo.presentationTimeUs = getPTSUs();
-                        muxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
+                        try {
+                            muxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
+                        } catch (final Exception e) {
+                            Log.e(TAG, "Failed to write. No space left on device?", e);
+                            throw new RuntimeException("Failed to write. No space left on device?");
+                        }   
                         prevOutputPTSUs = mBufferInfo.presentationTimeUs;
                     }
                 }
