@@ -107,9 +107,13 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
 
       }
 	
-	@available(OSX 11.0, *)
-	public func previewController(previewController: RPPreviewViewController, didFinishWithActivityTypes activityTypes: Set<String>) {
+	@available(OSX 11.0, *)				     
+	public func previewController(_ previewController: RPPreviewViewController, didFinishWithActivityTypes activityTypes: Set<String>) {
+		let viewController = NSApplication.shared.keyWindow?.contentViewController
+        	viewController?.dismiss(previewController)
+		
 		print("HHRecorder: Preview finished activities \(activityTypes)")
+		HhScreenRecorderPlugin.channel?.invokeMethod("onRecordingShareFinished", arguments: nil)
 	}
     
 }
