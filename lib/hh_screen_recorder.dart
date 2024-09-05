@@ -6,8 +6,7 @@ import 'dart:io';
 import 'hh_screen_recorder_platform_interface.dart';
 import 'package:flutter/services.dart';
 
-RecordOutput recordOutputFromJson(String str) =>
-    RecordOutput.fromJson(json.decode(str));
+RecordOutput recordOutputFromJson(String str) => RecordOutput.fromJson(json.decode(str));
 
 String recordOutputToJson(RecordOutput data) => json.encode(data.toJson());
 
@@ -45,11 +44,15 @@ class HhScreenRecorder {
   }
 
   Future<bool> startRecording(
-      {required String filename,
-      String? foldername,
-      int bitrate = 120000000,
-      int fps = 60}) async {
+      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60, void Function()? onRecordingShareFinished}) async {
     try {
+      _channel.setMethodCallHandler((MethodCall call) async {
+        if (call.method == "onRecordingShareFinished") {
+          print("Recording Finished: ${call.arguments}");
+          onRecordingShareFinished?.call();
+        }
+      });
+
       var response = await _channel.invokeMethod('startRecording', {
         "filename": filename,
         "foldername": foldername,
