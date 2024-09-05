@@ -9,11 +9,12 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
     
     
     var flutterRes : FlutterResult?
+	static var channel : FlutterMethodChannel?;
     
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger)
+    channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger)
     let instance = HhScreenRecorderPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
+    registrar.addMethodCallDelegate(instance, channel: channel!)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -101,9 +102,14 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
         let viewController = NSApplication.shared.keyWindow?.contentViewController
         
         viewController?.dismiss(previewController)
-        flutterRes?(true)
-        print("HHRecorder: Stopped recording")
+        print("HHRecorder: Closed share dialog for recording")
+		HhScreenRecorderPlugin.channel?.invokeMethod("onRecordingShareFinished", arguments: nil)
 
       }
+	
+	@available(OSX 11.0, *)
+	public func previewController(previewController: RPPreviewViewController, didFinishWithActivityTypes activityTypes: Set<String>) {
+		print("HHRecorder: Preview finished activities \(activityTypes)")
+	}
     
 }
