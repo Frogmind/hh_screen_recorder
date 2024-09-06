@@ -7,7 +7,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   
     var flutterRes : FlutterResult?
 	static var channel : FlutterMethodChannel?;
-	var wasShareFinishSent : Bool;
+	var wasShareFinishSent : Bool = false;
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger())
