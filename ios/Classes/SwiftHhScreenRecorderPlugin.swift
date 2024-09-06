@@ -84,6 +84,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
 	public func previewController(_ previewController: RPPreviewViewController, didFinishWithActivityTypes activityTypes: Set<String>) {
 		UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
 		print("HHRecorder: Preview finished activities \(activityTypes)")
-		SwiftHhScreenRecorderPlugin.channel?.invokeMethod("onRecordingShareFinished", arguments: nil)
+		let myDictionary: [String: String] = Dictionary(uniqueKeysWithValues: activityTypes.map { ($0, $0) })
+		SwiftHhScreenRecorderPlugin.channel?.invokeMethod("onRecordingShareFinished", arguments: myDictionary)
 	}
 }
