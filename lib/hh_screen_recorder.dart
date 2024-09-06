@@ -52,7 +52,7 @@ class HhScreenRecorder {
           List<String>? shareDestinations;
           if (call.arguments != null) {
             call.arguments.forEach((key, value) {
-              shareDestinations.add(value);
+              shareDestinations?.add(value);
             });
           }
           onRecordingShareFinished?.call(shareDestinations);
