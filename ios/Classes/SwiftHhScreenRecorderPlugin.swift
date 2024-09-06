@@ -7,6 +7,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   
     var flutterRes : FlutterResult?
 	static var channel : FlutterMethodChannel?;
+	var wasShareFinishSent : bool;
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger())
@@ -17,6 +18,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
     flutterRes = result
+	wasShareFinishSent = false
       
     if (call.method == "startRecording")
     {
@@ -75,6 +77,9 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   }
 
   public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+	  
+	  if (wasShareFinishSent)
+			return;
       
       UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
       print("HHRecorder: Stopped recording")
@@ -84,7 +89,15 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
 	public func previewController(_ previewController: RPPreviewViewController, didFinishWithActivityTypes activityTypes: Set<String>) {
 		UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
 		print("HHRecorder: Preview finished activities \(activityTypes)")
+		
+		/*let myDictionary: [String: String] = activityTypes.enumerated().reduce(into: [String: String]()) { dict, element in
+			dict[element.element] = element.element
+		}*/
+		
 		let myDictionary: [String: String] = Dictionary(uniqueKeysWithValues: activityTypes.map { ($0, $0) })
+		
 		SwiftHhScreenRecorderPlugin.channel?.invokeMethod("onRecordingShareFinished", arguments: myDictionary)
+		
+		wasShareFinishSent = true
 	}
 }
