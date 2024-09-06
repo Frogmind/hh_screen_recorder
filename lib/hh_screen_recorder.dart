@@ -44,12 +44,18 @@ class HhScreenRecorder {
   }
 
   Future<bool> startRecording(
-      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60, void Function()? onRecordingShareFinished}) async {
+      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60, void Function(String?)? onRecordingShareFinished}) async {
     try {
       _channel.setMethodCallHandler((MethodCall call) async {
         if (call.method == "onRecordingShareFinished") {
           print("Recording Finished: ${call.arguments}");
-          onRecordingShareFinished?.call();
+          String? shareDestination;
+          if (call.arguments != null) {
+            call.arguments.forEach((key, value) {
+              shareDestination = value;
+            });
+          }
+          onRecordingShareFinished?.call(shareDestination);
         }
       });
 
