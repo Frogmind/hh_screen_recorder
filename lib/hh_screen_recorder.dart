@@ -44,7 +44,7 @@ class HhScreenRecorder {
   }
 
   Future<bool> startRecording(
-      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60, void Function(List<String>?)? onRecordingShareFinished}) async {
+      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60, bool enableMicrophone = false, void Function(List<String>?)? onRecordingShareFinished}) async {
     try {
       _channel.setMethodCallHandler((MethodCall call) async {
         if (call.method == "onRecordingShareFinished") {
@@ -64,6 +64,7 @@ class HhScreenRecorder {
         "foldername": foldername,
         "bitrate": bitrate,
         "fps": fps,
+        "enableMicrophone": enableMicrophone,
       });
       return response;
     } on Exception catch (ex) {
