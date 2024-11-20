@@ -24,7 +24,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
           
           if (call.method == "startRecording")
           {
-	      result.error("test", "test2", null);
+	      result.error("test", "test2", nil);
               var enableMicrophone = false
               if let arguments = call.arguments as? [String: Any] {
                  enableMicrophone = arguments["enableMicrophone"] as! Bool
