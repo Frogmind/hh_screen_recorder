@@ -240,7 +240,12 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
         System.out.println("HHRecorder: sending flutter result");
         System.out.println(msg);
         m_awatingFlutterResult = false;
-        m_flutterResult.success(success);
+
+        if(success)
+            m_flutterResult.success(true);
+        else
+            m_flutterResult.error("", msg, null);
+
     }
 
     void startRecording() {
