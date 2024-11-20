@@ -34,7 +34,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
               RPScreenRecorder.shared().startRecording { err in
                 guard err == nil else {
                     print("HHRecorder: Error starting recording: \(err.debugDescription)")
-                    result(FlutterError(code: "0", message: err.debugDescription, nil))
+                    result(FlutterError(code: "0", message: err.debugDescription, details: nil))
                     return }
                   
                   print("HHRecorder: Started recording.")
