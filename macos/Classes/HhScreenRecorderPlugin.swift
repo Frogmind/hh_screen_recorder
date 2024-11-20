@@ -24,7 +24,6 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
           
           if (call.method == "startRecording")
           {
-	      result(FlutterError(code: "0", message: "test", details: nil));
               var enableMicrophone = false
               if let arguments = call.arguments as? [String: Any] {
                  enableMicrophone = arguments["enableMicrophone"] as! Bool
@@ -35,7 +34,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
               RPScreenRecorder.shared().startRecording { err in
                 guard err == nil else {
                     print("HHRecorder: Error starting recording: \(err.debugDescription)")
-                    result(false)
+                    result(FlutterError(code: "0", message: err.debugDescription, nil))
                     return }
                   
                   print("HHRecorder: Started recording.")
