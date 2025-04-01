@@ -1,0 +1,22 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - hh_screen_recorder (1.0.0):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - hh_screen_recorder (from `Flutter/ephemeral/.symlinks/plugins/hh_screen_recorder/macos`)
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  hh_screen_recorder:
+    :path: Flutter/ephemeral/.symlinks/plugins/hh_screen_recorder/macos
+
+SPEC CHECKSUMS:
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  hh_screen_recorder: 956711bb2ec25d3d53bdbdc4c1ea9ff7aaab5573
+
+PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
+
+COCOAPODS: 1.16.2

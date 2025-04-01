@@ -2,7 +2,6 @@ import Flutter
 import UIKit
 import ReplayKit
 
-
 public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewViewControllerDelegate {
   
 	var flutterRes : FlutterResult?
@@ -20,7 +19,50 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
 	flutterRes = result
 	wasShareFinishSent = false
 	  
-	if (call.method == "startRecording")
+    if(call.method == "getPlatformVersion")
+    {
+      result("unknown")
+      return
+    }
+      
+    if(call.method == "startHighlight")
+    {
+        guard #available(iOS 15.0, *)
+        else {
+            result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
+            return
+        }
+        HighlightManager.shared.startHighlight();
+        result(true)
+        
+    }
+    else if(call.method == "triggerHighlight")
+    {
+        guard #available(iOS 15.0, *)
+        else {
+            result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
+            return
+        }
+        
+        var duration = 1.0
+        if let arguments = call.arguments as? [String: Any] {
+            duration = arguments["duration"] as! Double
+        }
+        
+        HighlightManager.shared.triggerHighlight(duration: duration);
+        result(true)
+    }
+    else if(call.method == "endHighlight")
+    {
+        guard #available(iOS 15.0, *)
+        else {
+            result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
+            return
+        }
+        HighlightManager.shared.endHighlight();
+        result(true)
+    }
+	else if (call.method == "startRecording")
 	{
 		var enableMicrophone = false
                 if let arguments = call.arguments as? [String: Any] {

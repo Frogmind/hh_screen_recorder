@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:hh_screen_recorder/hh_screen_recorder.dart';
-
+import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -14,22 +14,47 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   String _platformVersion = 'Unknown';
   final _hhScreenRecorderPlugin = HhScreenRecorder();
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  Timer? _timer;
+  Duration _elapsedTime = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(begin: 0, end: 200).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    ));
+
+    // Start the timer to track elapsed time
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedTime += const Duration(seconds: 1);
+      });
+    });
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
+  @override
+  void dispose() {
+    _controller.dispose();
+    _timer?.cancel(); // Stop the timer
+    super.dispose();
+  }
+
   Future<void> initPlatformState() async {
     String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
     try {
       platformVersion =
           await _hhScreenRecorderPlugin.getPlatformVersion() ?? 'Unknown platform version';
@@ -37,9 +62,6 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
@@ -49,13 +71,62 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    String formattedTime = _elapsedTime.toString().split('.').first.padLeft(8, "0");
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              const SizedBox(height: 20),
+              Text(
+                'Elapsed Time: $formattedTime',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  _hhScreenRecorderPlugin.startHighlight();
+                },
+                child: const Text('StartRecording'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  _hhScreenRecorderPlugin.endHiglight();
+                },
+                child: const Text('EndRecording'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  _hhScreenRecorderPlugin.triggerHiglight();
+                },
+                child: const Text('TriggerMoment'),
+              ),
+              const SizedBox(height: 40),
+              AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Container(
+                    width: 220,
+                    height: 10,
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: _animation.value,
+                      height: 10,
+                      color: Colors.blue,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

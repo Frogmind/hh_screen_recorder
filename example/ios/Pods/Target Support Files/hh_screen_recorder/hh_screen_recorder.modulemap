@@ -1,0 +1,6 @@
+framework module hh_screen_recorder {
+  umbrella header "hh_screen_recorder-umbrella.h"
+
+  export *
+  module * { export * }
+}

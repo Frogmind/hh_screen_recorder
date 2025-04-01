@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -41,6 +40,36 @@ class HhScreenRecorder {
 
   Future<String?> getPlatformVersion() {
     return HhScreenRecorderPlatform.instance.getPlatformVersion();
+  }
+
+  Future<bool> startHighlight() async
+  {
+    try {
+      var response = await _channel.invokeMethod('startHighlight');
+      return response;
+    } on Exception catch (ex) {
+      throw Exception(ex.toString());
+    }
+  }
+
+ Future<bool> triggerHiglight() async
+  {
+    try {
+      var response = await _channel.invokeMethod('triggerHighlight');
+      return response;
+    } on Exception catch (ex) {
+      throw Exception(ex.toString());
+    }
+  }
+
+  Future<bool> endHiglight() async
+  {
+     try {
+      var response = await _channel.invokeMethod('endHighlight');
+      return response;
+    } on Exception catch (ex) {
+      throw Exception(ex.toString());
+    }
   }
 
   Future<bool> startRecording(

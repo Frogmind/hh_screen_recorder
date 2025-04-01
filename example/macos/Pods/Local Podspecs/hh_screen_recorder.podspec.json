@@ -1,0 +1,28 @@
+{
+  "name": "hh_screen_recorder",
+  "version": "1.0.0",
+  "summary": "Screen recorder.",
+  "description": "Screen recorder.",
+  "homepage": "http://inanevin.com",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "InanEvin": "inanevin@gmail.com"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "dependencies": {
+    "FlutterMacOS": []
+  },
+  "platforms": {
+    "osx": "10.11"
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
+  "swift_versions": "5.0",
+  "swift_version": "5.0"
+}

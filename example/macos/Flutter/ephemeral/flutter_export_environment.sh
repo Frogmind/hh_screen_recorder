@@ -1,0 +1,17 @@
+#!/bin/sh
+# This is a generated file; do not edit or check into version control.
+export "FLUTTER_ROOT=/Users/inanevin/hh/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/inanevin/hh/hh_screen_recorder/example"
+export "COCOAPODS_PARALLEL_CODE_SIGN=true"
+export "FLUTTER_TARGET=/Users/inanevin/hh/hh_screen_recorder/example/lib/main.dart"
+export "FLUTTER_BUILD_DIR=build"
+export "FLUTTER_BUILD_NAME=1.0.0"
+export "FLUTTER_BUILD_NUMBER=1"
+export "FLUTTER_ENGINE=/Users/inanevin/hh/libs/flutter-engine-out"
+export "LOCAL_ENGINE=host_debug_unopt_arm64"
+export "LOCAL_ENGINE_HOST=host_debug_unopt_arm64"
+export "ARCHS=arm64"
+export "DART_OBFUSCATION=false"
+export "TRACK_WIDGET_CREATION=true"
+export "TREE_SHAKE_ICONS=false"
+export "PACKAGE_CONFIG=/Users/inanevin/hh/hh_screen_recorder/example/.dart_tool/package_config.json"
