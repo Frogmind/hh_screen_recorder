@@ -52,17 +52,17 @@ class HhScreenRecorder {
     }
   }
 
- Future<bool> triggerHiglight() async
+ Future<bool> triggerHiglight(double duration) async
   {
     try {
-      var response = await _channel.invokeMethod('triggerHighlight');
+      var response = await _channel.invokeMethod('triggerHighlight', {"duration": duration});
       return response;
     } on Exception catch (ex) {
       throw Exception(ex.toString());
     }
   }
 
-  Future<bool> endHiglight() async
+  Future<bool> endHighlight() async
   {
      try {
       var response = await _channel.invokeMethod('endHighlight');

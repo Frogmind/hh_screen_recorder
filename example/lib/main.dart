@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  _hhScreenRecorderPlugin.endHiglight();
+                  _hhScreenRecorderPlugin.endHighlight();
                 },
                 child: const Text('EndRecording'),
               ),
