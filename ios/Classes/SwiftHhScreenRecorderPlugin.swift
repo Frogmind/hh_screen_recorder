@@ -59,7 +59,12 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
             return
         }
-        HighlightManager.shared.endHighlight();
+        
+        var title = ""
+        if let arguments = call.arguments as? [String: Any] {
+            title = arguments["title"] as! String
+        }
+        HighlightManager.shared.endHighlight(title: title);
         result(true)
     }
 	else if (call.method == "startRecording")

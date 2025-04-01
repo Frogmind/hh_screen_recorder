@@ -62,10 +62,10 @@ class HhScreenRecorder {
     }
   }
 
-  Future<bool> endHighlight() async
+  Future<bool> endHighlight(String title) async
   {
      try {
-      var response = await _channel.invokeMethod('endHighlight');
+      var response = await _channel.invokeMethod('endHighlight', {"title": title});
       return response;
     } on Exception catch (ex) {
       throw Exception(ex.toString());

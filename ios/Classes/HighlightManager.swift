@@ -41,7 +41,7 @@ class HighlightManager {
         print("Triggered highlight at time: \(currentTime) with duration: \(duration)")
     }
     
-    func endHighlight() {
+    func endHighlight(title: String) {
         // Create a URL to which the recording will be saved.
         let url = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
@@ -59,7 +59,7 @@ class HighlightManager {
                             print("Error merging video: \(error.localizedDescription)")
                         } else if let mergedURL = mergedURL {
                             // Present your review view controller.
-                            let previewVC = VideoReviewViewController(videoURL: mergedURL)
+                            let previewVC = VideoReviewViewController(videoURL: mergedURL, title: title)
                             previewVC.modalPresentationStyle = .fullScreen
                             UIApplication.topViewController()?.present(previewVC, animated: true) {
                                 previewVC.playerViewController!.player?.play()
