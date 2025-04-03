@@ -32,25 +32,13 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
             return
         }
-        HighlightManager.shared.startHighlight();
-        result(true)
-        
-    }
-    else if(call.method == "triggerHighlight")
-    {
-        guard #available(iOS 15.0, *)
-        else {
-            result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
-            return
+        HighlightManager.shared.startHighlight(){ error in
+            if let error = error {
+                result(FlutterError(code: "start_failed", message: error.localizedDescription, details: nil))
+            }  else {
+                result(true)
+            }
         }
-        
-        var duration = 1.0
-        if let arguments = call.arguments as? [String: Any] {
-            duration = arguments["duration"] as! Double
-        }
-        
-        HighlightManager.shared.triggerHighlight(duration: duration);
-        result(true)
     }
     else if(call.method == "endHighlight")
     {
@@ -59,14 +47,43 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
             return
         }
-        
-        var title = ""
-        if let arguments = call.arguments as? [String: Any] {
-            title = arguments["title"] as! String
+
+        HighlightManager.shared.endHighlight() { error in
+            if let error = error {
+                result(FlutterError(code: "end_failed", message: error.localizedDescription, details: nil))
+            }  else {
+                result(true)
+            }
         }
-        HighlightManager.shared.endHighlight(title: title);
         result(true)
     }
+      else if call.method == "saveHighlight" {
+          guard #available(iOS 15.0, *) else {
+              result(FlutterError(code: "unsupported", message: "Requires at least iOS 15.0+", details: nil))
+              return
+          }
+
+          var title = ""
+          var timestamps: [Double] = []
+          var duration = 0.0
+          if let arguments = call.arguments as? [String: Any] {
+              title = arguments["title"] as? String ?? ""
+              duration = arguments["duration"] as? Double ?? 0.0
+              if let rawTimestamps = arguments["timestamps"] as? [Any] {
+                  timestamps = rawTimestamps.compactMap { $0 as? Double }
+              }
+          }
+
+          HighlightManager.shared.saveHighlight(title: title, duration: duration, timestamps: timestamps) { fileURL, error in
+              if let error = error {
+                  result(FlutterError(code: "merge_failed", message: error.localizedDescription, details: nil))
+              } else if let fileURL = fileURL {
+                  result(fileURL.path) // Return path string to Dart
+              } else {
+                  result(FlutterError(code: "unknown", message: "Unknown error", details: nil))
+              }
+          }
+      }
 	else if (call.method == "startRecording")
 	{
 		var enableMicrophone = false

@@ -10,70 +10,66 @@ class HighlightManager {
     
     // Stores when recording started.
     private var recordingStartTime: Date?
-    // Array to store highlight events as (time, duration) tuples.
-    private var highlightEvents: [(time: Double, duration: Double)] = []
     
     // MARK: - Recording
     
-    func startHighlight() {
+    func startHighlight(completion: @escaping (Error?) -> Void) {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
         recordingStartTime = Date()
         RPScreenRecorder.shared().startRecording { err in
             guard err == nil else {
                 print("HHRecorder: Error starting recording: \(err.debugDescription)")
+                completion(err)
                 return
             }
             print("HHRecorder: Started recording.")
+            completion(nil)
         }
     }
     
-    /// Call this whenever you want to capture a highlight.
-    /// The 'duration' parameter represents how many seconds of the clip you want.
-    func triggerHighlight(duration: Double) {
-        guard let start = recordingStartTime else {
-            print("Recording has not been started!")
-            return
+    func endHighlight(completion: @escaping (Error?) -> Void)
+    {
+        RPScreenRecorder.shared().stopRecording() { preview, error in
+            if let error = error {
+                print("Failed to stop recording: \(error.localizedDescription)")
+                completion(error)
+            } else {
+                self.recordingStartTime = nil
+                completion(nil)
+                print("HHRecorder: Stopped recording.")
+            }
         }
-        // Get the current time relative to when the recording started.
-        let currentTime = Date().timeIntervalSince(start)
-        // Save the current time and the passed duration.
-        highlightEvents.append((time: currentTime, duration: duration))
-        print("Triggered highlight at time: \(currentTime) with duration: \(duration)")
     }
     
-    func endHighlight(title: String) {
-        // Create a URL to which the recording will be saved.
+    func saveHighlight(title: String, duration: Double, timestamps: [Double], completion: @escaping (URL?, Error?) -> Void) {
         let url = URL(fileURLWithPath: NSTemporaryDirectory())
-                    .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
-        
+            .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
+
         RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
             if let error = error {
                 print("Failed to stop recording: \(error.localizedDescription)")
+                completion(nil, error)
             } else {
                 print("Recording stopped successfully and saved to \(url.path)")
-                
-                if !self.highlightEvents.isEmpty
-                {
-                    // Use the stored highlight events to trim the video.
-                    self.trimAndMerge(videoURL: url, highlights: self.highlightEvents) { mergedURL, error in
+
+                if !timestamps.isEmpty {
+                    self.trimAndMerge(videoURL: url, highlights: timestamps, duration: duration) { mergedURL, error in
                         DispatchQueue.main.async {
                             if let error = error {
                                 print("Error merging video: \(error.localizedDescription)")
+                                completion(nil, error)
                             } else if let mergedURL = mergedURL {
-                                // Present your review view controller.
-                                let previewVC = VideoReviewViewController(videoURL: mergedURL, title: title)
-                                previewVC.modalPresentationStyle = .fullScreen
-                                UIApplication.topViewController()?.present(previewVC, animated: true) {
-                                    previewVC.playerViewController!.player?.play()
-                                }
+                                completion(mergedURL, nil)
+                            } else {
+                                completion(nil, NSError(domain: "highlight", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error during merge"]))
                             }
                         }
                     }
+                } else {
+                    completion(url, nil) // No trimming, return raw video
                 }
-              
-                // Optionally, clear stored data for next recording.
+
                 self.recordingStartTime = nil
-                self.highlightEvents.removeAll()
             }
         }
     }
@@ -92,7 +88,8 @@ class HighlightManager {
     ///   - highlights: Array of (time, duration) tuples.
     ///   - completion: Completion handler with the URL of the merged video or an error.
     func trimAndMerge(videoURL: URL,
-                      highlights: [(time: Double, duration: Double)],
+                      highlights: [Double],
+                      duration: Double,
                       completion: @escaping (URL?, Error?) -> Void) {
         
         let asset = AVAsset(url: videoURL)
@@ -125,8 +122,8 @@ class HighlightManager {
         let timeScale = asset.duration.timescale
         
         for highlight in highlights {
-            let endTime = CMTime(seconds: highlight.time, preferredTimescale: timeScale)
-            let segmentDuration = CMTime(seconds: highlight.duration, preferredTimescale: timeScale)
+            let endTime = CMTime(seconds: highlight, preferredTimescale: timeScale)
+            let segmentDuration = CMTime(seconds: duration, preferredTimescale: timeScale)
             let startTime = CMTimeSubtract(endTime, segmentDuration)
             let timeRange = CMTimeRange(start: startTime, duration: segmentDuration)
             
