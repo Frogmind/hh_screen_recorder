@@ -52,22 +52,25 @@ class HighlightManager {
             } else {
                 print("Recording stopped successfully and saved to \(url.path)")
                 
-                // Use the stored highlight events to trim the video.
-                self.trimAndMerge(videoURL: url, highlights: self.highlightEvents) { mergedURL, error in
-                    DispatchQueue.main.async {
-                        if let error = error {
-                            print("Error merging video: \(error.localizedDescription)")
-                        } else if let mergedURL = mergedURL {
-                            // Present your review view controller.
-                            let previewVC = VideoReviewViewController(videoURL: mergedURL, title: title)
-                            previewVC.modalPresentationStyle = .fullScreen
-                            UIApplication.topViewController()?.present(previewVC, animated: true) {
-                                previewVC.playerViewController!.player?.play()
+                if highlightEvents.isNotEmpty
+                {
+                    // Use the stored highlight events to trim the video.
+                    self.trimAndMerge(videoURL: url, highlights: self.highlightEvents) { mergedURL, error in
+                        DispatchQueue.main.async {
+                            if let error = error {
+                                print("Error merging video: \(error.localizedDescription)")
+                            } else if let mergedURL = mergedURL {
+                                // Present your review view controller.
+                                let previewVC = VideoReviewViewController(videoURL: mergedURL, title: title)
+                                previewVC.modalPresentationStyle = .fullScreen
+                                UIApplication.topViewController()?.present(previewVC, animated: true) {
+                                    previewVC.playerViewController!.player?.play()
+                                }
                             }
                         }
                     }
                 }
-                
+              
                 // Optionally, clear stored data for next recording.
                 self.recordingStartTime = nil
                 self.highlightEvents.removeAll()
