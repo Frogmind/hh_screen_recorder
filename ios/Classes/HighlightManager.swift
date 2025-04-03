@@ -52,7 +52,7 @@ class HighlightManager {
             } else {
                 print("Recording stopped successfully and saved to \(url.path)")
                 
-                if highlightEvents.isNotEmpty
+                if !self.highlightEvents.isEmpty
                 {
                     // Use the stored highlight events to trim the video.
                     self.trimAndMerge(videoURL: url, highlights: self.highlightEvents) { mergedURL, error in
