@@ -30,25 +30,32 @@ class HighlightManager {
     
     func endHighlight(completion: @escaping (Error?) -> Void)
     {
-        RPScreenRecorder.shared().stopRecording() { preview, error in
-            if let error = error {
-                print("Failed to stop recording: \(error.localizedDescription)")
-                completion(error)
-            } else {
-                self.recordingStartTime = nil
-                completion(nil)
-                print("HHRecorder: Stopped recording.")
+        self.recordingStartTime = nil
+        lastURL = nil;
+        
+        if(RPScreenRecorder.shared().isRecording)
+        {
+            RPScreenRecorder.shared().stopRecording() { preview, error in
+                if let error = error {
+                    print("Failed to stop recording: \(error.localizedDescription)")
+                    completion(error)
+                } else {
+                    completion(nil)
+                    print("HHRecorder: Stopped recording.")
+                }
             }
+        }
+        else
+        {
+            completion(nil)
         }
     }
     
     func saveHighlight(title: String, duration: Double, timestamps: [Double], completion: @escaping (URL?, Error?) -> Void) {
         
-        let url: URL
-        if let existingURL = lastURL {
-            url = existingURL
-        } else {
-            url = URL(fileURLWithPath: NSTemporaryDirectory())
+        if(RPScreenRecorder.shared().isRecording)
+        {
+            let url = URL(fileURLWithPath: NSTemporaryDirectory())
                  .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
             
             RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
@@ -58,10 +65,17 @@ class HighlightManager {
                 } else {
                     print("Recording stopped successfully and saved to \(url.path)")
                     self.recordingStartTime = nil
+                    self.lastURL = url;
                 }
             }
-            
         }
+        
+        if(lastURL == nil || lastURL!.absoluteString.isEmpty)
+        {
+            completion(nil, nil)
+            return;
+        }
+       
        
         if !timestamps.isEmpty {
             self.trimAndMerge(videoURL: lastURL!, highlights: timestamps, duration: duration) { mergedURL, error in
@@ -77,7 +91,7 @@ class HighlightManager {
                 }
             }
         } else {
-            completion(url, nil) // No trimming, return raw video
+            completion(lastURL!, nil) // No trimming, return raw video
         }
     }
     
