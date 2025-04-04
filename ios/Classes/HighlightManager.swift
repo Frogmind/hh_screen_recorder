@@ -10,6 +10,7 @@ class HighlightManager {
     
     // Stores when recording started.
     private var recordingStartTime: Date?
+    private var lastURL : URL?
     
     // MARK: - Recording
     
@@ -42,35 +43,41 @@ class HighlightManager {
     }
     
     func saveHighlight(title: String, duration: Double, timestamps: [Double], completion: @escaping (URL?, Error?) -> Void) {
-        let url = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
-
-        RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
-            if let error = error {
-                print("Failed to stop recording: \(error.localizedDescription)")
-                completion(nil, error)
-            } else {
-                print("Recording stopped successfully and saved to \(url.path)")
-
-                if !timestamps.isEmpty {
-                    self.trimAndMerge(videoURL: url, highlights: timestamps, duration: duration) { mergedURL, error in
-                        DispatchQueue.main.async {
-                            if let error = error {
-                                print("Error merging video: \(error.localizedDescription)")
-                                completion(nil, error)
-                            } else if let mergedURL = mergedURL {
-                                completion(mergedURL, nil)
-                            } else {
-                                completion(nil, NSError(domain: "highlight", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error during merge"]))
-                            }
-                        }
-                    }
+        
+        let url: URL
+        if let existingURL = lastURL {
+            url = existingURL
+        } else {
+            url = URL(fileURLWithPath: NSTemporaryDirectory())
+                 .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
+            
+            RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
+                if let error = error {
+                    print("Failed to stop recording: \(error.localizedDescription)")
+                    completion(nil, error)
                 } else {
-                    completion(url, nil) // No trimming, return raw video
+                    print("Recording stopped successfully and saved to \(url.path)")
+                    self.recordingStartTime = nil
                 }
-
-                self.recordingStartTime = nil
             }
+            
+        }
+       
+        if !timestamps.isEmpty {
+            self.trimAndMerge(videoURL: lastURL!, highlights: timestamps, duration: duration) { mergedURL, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("Error merging video: \(error.localizedDescription)")
+                        completion(nil, error)
+                    } else if let mergedURL = mergedURL {
+                        completion(mergedURL, nil)
+                    } else {
+                        completion(nil, NSError(domain: "highlight", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error during merge"]))
+                    }
+                }
+            }
+        } else {
+            completion(url, nil) // No trimming, return raw video
         }
     }
     
