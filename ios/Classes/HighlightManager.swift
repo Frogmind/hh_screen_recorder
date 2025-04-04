@@ -90,6 +90,7 @@ class HighlightManager {
         }
         else{
             
+            
             if(lastURL == nil)
             {
                 completion(nil ,nil)
