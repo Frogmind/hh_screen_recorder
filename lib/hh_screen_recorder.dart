@@ -48,7 +48,6 @@ class HhScreenRecorder {
 
   Future<String> saveHighlight(String title, double duration, List<double> timestamps) async {
     if (!_isHighlightOn) return "";
-    _isHighlightOn = false;
 
     try {
       final response = await _channel.invokeMethod('saveHighlight', {"title": title, "duration": duration, "timestamps": timestamps});
