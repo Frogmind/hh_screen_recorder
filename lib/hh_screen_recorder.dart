@@ -25,14 +25,21 @@ class RecordOutput {
 
 class HhScreenRecorder {
   static const MethodChannel _channel = MethodChannel('hh_screen_recorder');
+  bool _isHighlightOn = false;
 
   Future<String?> getPlatformVersion() {
     return HhScreenRecorderPlatform.instance.getPlatformVersion();
   }
 
   Future<bool> startHighlight() async {
+    if (_isHighlightOn) return true;
+
     try {
       var response = await _channel.invokeMethod('startHighlight');
+
+      if (response) {
+        _isHighlightOn = true;
+      }
       return response;
     } on Exception catch (ex) {
       throw Exception(ex.toString());
@@ -40,6 +47,9 @@ class HhScreenRecorder {
   }
 
   Future<String> saveHighlight(String title, double duration, List<double> timestamps) async {
+    if (!_isHighlightOn) return "";
+    _isHighlightOn = false;
+
     try {
       final response = await _channel.invokeMethod('saveHighlight', {"title": title, "duration": duration, "timestamps": timestamps});
       return response; // This will be the video file path
@@ -49,6 +59,9 @@ class HhScreenRecorder {
   }
 
   Future<bool> endHighlight() async {
+    if (!_isHighlightOn) return true;
+    _isHighlightOn = false;
+
     try {
       var response = await _channel.invokeMethod('endHighlight');
       return response;
