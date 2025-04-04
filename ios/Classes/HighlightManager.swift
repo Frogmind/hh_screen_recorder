@@ -17,6 +17,7 @@ class HighlightManager {
     func startHighlight(completion: @escaping (Error?) -> Void) {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
         recordingStartTime = Date()
+        lastURL = nil
         RPScreenRecorder.shared().startRecording { err in
             guard err == nil else {
                 print("HHRecorder: Error starting recording: \(err.debugDescription)")
