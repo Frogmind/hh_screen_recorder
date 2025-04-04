@@ -57,7 +57,8 @@ class HighlightManager {
         {
             let url = URL(fileURLWithPath: NSTemporaryDirectory())
                  .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
-            
+            self.lastURL = url;
+
             RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
                 if let error = error {
                     print("Failed to stop recording: \(error.localizedDescription)")
@@ -65,7 +66,6 @@ class HighlightManager {
                 } else {
                     print("Recording stopped successfully and saved to \(url.path)")
                     self.recordingStartTime = nil
-                    self.lastURL = url;
                 }
             }
         }
