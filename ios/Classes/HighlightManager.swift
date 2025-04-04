@@ -54,11 +54,16 @@ class HighlightManager {
     
     func saveHighlight(title: String, duration: Double, timestamps: [Double], completion: @escaping (URL?, Error?) -> Void) {
         
+        if timestamps.isEmpty
+        {
+            completion(nil, nil)
+            return
+        }
+        
         if(RPScreenRecorder.shared().isRecording)
         {
             let url = URL(fileURLWithPath: NSTemporaryDirectory())
                  .appendingPathComponent("highlight_\(Date().timeIntervalSince1970).mov")
-            self.lastURL = url;
 
             RPScreenRecorder.shared().stopRecording(withOutput: url) { error in
                 if let error = error {
@@ -67,18 +72,29 @@ class HighlightManager {
                 } else {
                     print("Recording stopped successfully and saved to \(url.path)")
                     self.recordingStartTime = nil
+                    self.lastURL = url
+                    self.trimAndMerge(videoURL: url, highlights: timestamps, duration: duration) { mergedURL, error in
+                        DispatchQueue.main.async {
+                            if let error = error {
+                                print("Error merging video: \(error.localizedDescription)")
+                                completion(nil, error)
+                            } else if let mergedURL = mergedURL {
+                                completion(mergedURL, nil)
+                            } else {
+                                completion(nil, NSError(domain: "highlight", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error during merge"]))
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        if(lastURL == nil || lastURL!.absoluteString.isEmpty)
-        {
-            completion(nil, nil)
-            return;
-        }
-       
-       
-        if !timestamps.isEmpty {
+        else{
+            
+            if(lastURL == nil)
+            {
+                completion(nil ,nil)
+                return;
+            }
             self.trimAndMerge(videoURL: lastURL!, highlights: timestamps, duration: duration) { mergedURL, error in
                 DispatchQueue.main.async {
                     if let error = error {
@@ -91,9 +107,8 @@ class HighlightManager {
                     }
                 }
             }
-        } else {
-            completion(lastURL!, nil) // No trimming, return raw video
         }
+      
     }
     
     // MARK: - Video Processing
