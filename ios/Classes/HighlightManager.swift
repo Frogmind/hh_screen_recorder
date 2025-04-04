@@ -21,15 +21,22 @@ class HighlightManager {
         lastURL = nil
         mergedCtr = 0
         
-        RPScreenRecorder.shared().startRecording { err in
-            guard err == nil else {
-                print("HHRecorder: Error starting recording: \(err.debugDescription)")
-                completion(err)
-                return
+        if(!RPScreenRecorder.shared().isRecording)
+        {
+            RPScreenRecorder.shared().startRecording { err in
+                guard err == nil else {
+                    print("HHRecorder: Error starting recording: \(err.debugDescription)")
+                    completion(err)
+                    return
+                }
+                print("HHRecorder: Started recording.")
+                completion(nil)
             }
-            print("HHRecorder: Started recording.")
+        }
+        else{
             completion(nil)
         }
+       
     }
     
     func endHighlight(completion: @escaping (Error?) -> Void)
