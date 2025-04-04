@@ -11,6 +11,7 @@ class HighlightManager {
     // Stores when recording started.
     private var recordingStartTime: Date?
     private var lastURL : URL?
+    private var mergedCtr : Int = 0
     
     // MARK: - Recording
     
@@ -18,6 +19,8 @@ class HighlightManager {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
         recordingStartTime = Date()
         lastURL = nil
+        mergedCtr = 0
+        
         RPScreenRecorder.shared().startRecording { err in
             guard err == nil else {
                 print("HHRecorder: Error starting recording: \(err.debugDescription)")
@@ -33,7 +36,8 @@ class HighlightManager {
     {
         self.recordingStartTime = nil
         lastURL = nil;
-        
+        mergedCtr = 0
+
         if(RPScreenRecorder.shared().isRecording)
         {
             RPScreenRecorder.shared().stopRecording() { preview, error in
@@ -184,7 +188,8 @@ class HighlightManager {
         }
         
         // Prepare for export.
-        let exportPath = NSTemporaryDirectory() + "mergedVideo.mp4"
+        let exportPath = NSTemporaryDirectory() +  "mergedVideo\(mergedCtr).mp4"
+        mergedCtr = mergedCtr + 1
         let exportURL = URL(fileURLWithPath: exportPath)
         try? FileManager.default.removeItem(at: exportURL)
         
