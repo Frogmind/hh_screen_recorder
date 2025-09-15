@@ -17,7 +17,7 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven {
-            url 'http://raw.githubusercontent.com/Frogmind/HHScreenRecorderLibCommon/master/repository/'
+            url 'https://raw.githubusercontent.com/Frogmind/HHScreenRecorderLibCommon/master/repository/'
             allowInsecureProtocol = true
         }
     }
@@ -55,4 +55,5 @@ dependencies {
         exclude module: 'support-v4'
     }
 }
+
 
